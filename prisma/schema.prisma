@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Event {
+  id          String     @id @default(cuid())
+  name        String
+  type        String     // e.g., "성과관리", "트렌드설명회"
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  customers   Customer[]
+  notices     Notice[]
+  surveys     Survey[]
+}
+
+model Customer {
+  id                String       @id @default(cuid())
+  eventId           String
+  name              String
+  phone             String?
+  email             String?
+  status            ContactStatus @default(PENDING)
+  callLog           String?       // 통화 대화 내용 등 기록
+  lastContactedAt   DateTime?
+  isSurveyCompleted Boolean      @default(false)
+  
+  event             Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@unique([eventId, email]) // Optional: restrict duplicate emails per event
+}
+
+model Notice {
+  id        String   @id @default(cuid())
+  eventId   String
+  title     String
+  content   String   // Text or HTML content to send
+  
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Survey {
+  id        String    @id @default(cuid())
+  eventId   String
+  title     String
+  formLink  String?   // If using external form like Google Forms
+  deadline  DateTime? // 마감 일시
+  
+  event     Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum ContactStatus {
+  PENDING           // 대기 중 (연락 전)
+  CALLED            // 전화 통화 완료
+  CALL_FAILED       // 전화 미수신 -> 다음에 전화할 대상자
+  EMAILED           // 이메일 안내문/설문지 발송 완료
+  SURVEY_COMPLETED  // 설문 응답 완료
+  CONTACT_NEXT      // 설문 기한 초과 -> 다음에 연락할 대상자
+}
