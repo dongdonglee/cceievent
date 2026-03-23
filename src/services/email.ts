@@ -1,5 +1,5 @@
 import sgMail from "@sendgrid/mail";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/db";
 
 // To use this, configure SENDGRID_API_KEY in .env
 sgMail.setApiKey(process.env.SENDGRID_API_KEY || "mock-key");

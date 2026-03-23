@@ -1,5 +1,5 @@
 import twilio from "twilio";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/db";
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
