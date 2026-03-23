@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
+import config from "../../prisma.config";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-export const prisma = globalForPrisma.prisma || new PrismaClient({
-  datasourceUrl: process.env.DATABASE_URL || process.env.POSTGRES_PRISMA_URL || "postgres://dummy:dummy@localhost/dummy",
-});
+// Bypass typescript strict checking for Prisma 7 config object
+export const prisma = globalForPrisma.prisma || new PrismaClient(config as any);
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
