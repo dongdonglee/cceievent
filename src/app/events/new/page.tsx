@@ -1,25 +1,8 @@
 import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
-// import { redirect } from "next/navigation";
-// import prisma from "@/lib/prisma";
+import { createEvent } from "@/app/actions/event";
 
 export default function NewEventPage() {
-  
-  /* 
-  // Example Server Action
-  async function createEvent(formData: FormData) {
-    "use server"
-    const name = formData.get("name") as string;
-    const type = formData.get("type") as string;
-    const description = formData.get("description") as string;
-    
-    await prisma.event.create({
-      data: { name, type, description }
-    });
-    redirect("/events");
-  }
-  */
-
   return (
     <div className="p-8 max-w-4xl mx-auto">
       <header className="mb-8">
@@ -32,7 +15,7 @@ export default function NewEventPage() {
       </header>
 
       <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <form className="p-8 space-y-8" action={/* createEvent */ undefined}>
+        <form className="p-8 space-y-8" action={createEvent}>
           
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-slate-800 border-b border-slate-100 pb-2">기본 정보</h3>

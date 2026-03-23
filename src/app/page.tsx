@@ -1,9 +1,10 @@
 import { ArrowRight, Mail, Phone, Users, CheckCircle, Clock, Calendar } from "lucide-react";
 import Link from "next/link";
-// In real app, import Prisma and fetch data here.
-// import prisma from "@/lib/prisma";
+import { getRecentEvents } from "@/app/actions/event";
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  const recentEvents = await getRecentEvents();
+  
   return (
     <div className="p-8">
       <header className="mb-8 flex justify-between items-center">
@@ -20,7 +21,7 @@ export default function Dashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard title="진행 중인 이벤트" value="3" icon={<Calendar />} color="indigo" />
+        <StatCard title="진행 중인 이벤트" value={Math.max(3, recentEvents.length).toString()} icon={<Calendar />} color="indigo" />
         <StatCard title="총 연락 진행률" value="78%" icon={<Users />} color="blue" />
         <StatCard title="이메일 발송 완료" value="1,240" icon={<Mail />} color="emerald" />
         <StatCard title="AI 통화 완료" value="84" icon={<Phone />} color="purple" />
@@ -46,22 +47,26 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-sm">
-                {[
-                  { id: 1, name: "2024년 3분기 성과관리 체계 안내", type: "이메일", count: "450명", status: "진행중", color: "blue" },
-                  { id: 2, name: "HR 최신 트렌드 세미나 초청", type: "전화+이메일", count: "120명", status: "완료", color: "emerald" },
-                  { id: 3, name: "부서장 핵심성과지표(KPI) 제출 안내", type: "설문조사", count: "32명", status: "마감임박", color: "amber" },
-                ].map((row) => (
+                {recentEvents.length > 0 ? recentEvents.map((row) => (
                   <tr key={row.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="px-6 py-4 font-medium text-slate-800">{row.name}</td>
+                    <td className="px-6 py-4 font-medium text-slate-800">
+                      <Link href={`/events/${row.id}`} className="hover:text-indigo-600 hover:underline">{row.name}</Link>
+                    </td>
                     <td className="px-6 py-4 text-slate-600">{row.type}</td>
-                    <td className="px-6 py-4 text-slate-600">{row.count}</td>
+                    <td className="px-6 py-4 text-slate-600">{row._count?.customers || 0}명</td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${row.color}-100 text-${row.color}-700`}>
-                        {row.status}
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                        진행중
                       </span>
                     </td>
                   </tr>
-                ))}
+                )) : (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-8 text-center text-slate-500">
+                      등록된 이벤트가 없습니다. 새 이벤트를 만들어보세요!
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
